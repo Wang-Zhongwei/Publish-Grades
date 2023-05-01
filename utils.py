@@ -22,7 +22,7 @@ def get_id2path(dir_path):
     for f_name in file_names:
         try:
             id2path[int(f_name.split('_')[-3])] = os.path.join(dir_path, f_name)
-        except IndexError:
+        except Exception as e:
             logging.warning('File \"{}\" does not have the correct format <sectionId>_<lastName>_<firstName>_<userId>_<studentId>_<Id> and thus ignored'.format(f_name))
     return id2path
 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     course_id = 130230
     quiz_id = 816752
     question_num = 1
-    API_KEY = '8597~oTKV6IpWzBTJhXkcj7ynRrmzb5MXrqpuyRo4zUS5bkxUmjMavHSftvyLAalM4yFX'
+    API_KEY = ''
     question_id = get_question_id(course_id, quiz_id, question_num, API_KEY)
 
    

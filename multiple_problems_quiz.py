@@ -6,27 +6,27 @@ parser.add_argument('-q', '--quiz_id', help='ID of the quiz', required=True, typ
 parser.add_argument('-Q', '--question_id', help='ID of the first question', required=True, type=int)
 parser.add_argument('-a', '--assignment_id', help='ID of the assignment', required=True, type=int)
 parser.add_argument('-e', '--excel_path', help='Path to Excel file', required=True, type=str)
-parser.add_argument('-d', '--dir_path', help='Path to attachment directory', required=True, type=str)
+parser.add_argument('-d', '--dir_path', help='Path to attachment directory', required=False, type=str)
 args = parser.parse_args()
 
 course_id = args.course_id
-quiz_id =   args.quiz_id
+quiz_id = args.quiz_id
 question_id = args.question_id
 assignment_id = args.assignment_id
 excel_path = args.excel_path
 dir_path = args.dir_path
+upload_attachment = True if dir_path else False
 
 # check if the path is valid
 import os
+import logging
 
 if not os.path.exists(excel_path):
     logging.warning('Please check on the path to Excel file: {}'.format(excel_path))
     exit(1)
-if not os.path.exists(dir_path):
+if upload_attachment and not os.path.exists(dir_path):
     logging.warning('Please check on the path to attachment directory: {}'.format(dir_path))
     exit(1)
-
-import logging
 
 import dotenv
 from canvasapi import Canvas
@@ -37,7 +37,7 @@ from utils import *
 logging.basicConfig(level=logging.WARNING)
 
 # load environment variables from test or production environment
-dotenv.load_dotenv('test.env')
+dotenv.load_dotenv('production.env')
 BASE_URL = os.getenv('BASE_URL')  # Canvas API BASE URL
 API_KEY = os.getenv('API_KEY') # Canvas API key
 
@@ -69,6 +69,7 @@ for submission in quiz.get_submissions():
                 }
             ]
         )
+        if not upload_attachment: continue
         file_path = id2path[user_id]
         assignment.get_submission(user_id).upload_comment(file_path)
         print('File {} has been uploaded for user {}'.format(file_path, user_id))

@@ -4,25 +4,26 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--course_id', help='ID of the course', required=True, type=int)
 parser.add_argument('-a', '--assignment_id', help='ID of the assignment', required=True, type=int)
 parser.add_argument('-e', '--excel_path', help='Path to Excel file', required=True, type=str)
-parser.add_argument('-d', '--dir_path', help='Path to attachment directory', required=True, type=str)
+parser.add_argument('-d', '--dir_path', help='Path to attachment directory', required=False, type=str)
 args = parser.parse_args()
 
 course_id = args.course_id
 assignment_id = args.assignment_id
 excel_path = args.excel_path
 dir_path = args.dir_path
+upload_attachment = True if dir_path else False
 
 import os
+import logging
 
 # check if the path is valid
 if not os.path.exists(excel_path):
     logging.warning('Please check on the path to Excel file: {}'.format(excel_path))
     exit(1)
-if not os.path.exists(dir_path):
+if upload_attachment and not os.path.exists(dir_path):
     logging.warning('Please check on the path to attachment directory: {}'.format(dir_path))
     exit(1)
 
-import logging
 
 from canvasapi import Canvas
 from canvasapi.exceptions import CanvasException
@@ -61,6 +62,7 @@ for submission in submissions:
             'posted_grade': id2score[user_id]
         })
         print('User {} has been graded'.format(user_id))
+        if not upload_attachment: continue
         file_path = id2path[user_id]
         submission.upload_comment(file_path)
         print('File {} has been uploaded for user {}'.format(file_path, user_id))

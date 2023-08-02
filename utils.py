@@ -26,16 +26,14 @@ def get_id2path(dir_path):
             logging.warning('File \"{}\" does not have the correct format <sectionId>_<lastName>_<firstName>_<userId>_<studentId>_<Id> and thus ignored'.format(f_name))
     return id2path
 
-ID_COL = 1
-SCORE_COL = 6
-def get_id2score(excel_path):
+def get_id2score(excel_path, id_col_idx, score_col_idx):
     """Read the excel file and return a dictionary of id -> score. Ignore the rows with empty score or non-numeric score.
     """
     df = pd.read_excel(excel_path)
     id2score = {}
     for i in range(len(df)):
-        id = df.iloc[i, ID_COL]
-        score = df.iloc[i, SCORE_COL]
+        id = df.iloc[i, id_col_idx]
+        score = df.iloc[i, score_col_idx]
         if not pd.isnull(score) and type(score) in [int, float]:
             id2score[id] = score
     return id2score

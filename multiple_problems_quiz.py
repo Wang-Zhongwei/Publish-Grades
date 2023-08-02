@@ -7,6 +7,8 @@ parser.add_argument('-Q', '--question_id', help='ID of the first question', requ
 parser.add_argument('-a', '--assignment_id', help='ID of the assignment', required=True, type=int)
 parser.add_argument('-e', '--excel_path', help='Path to Excel file', required=True, type=str)
 parser.add_argument('-d', '--dir_path', help='Path to attachment directory', required=False, type=str)
+parser.add_argument('--id_col_idx', help='Index of the column containing user ID', required=False, type=int, default=1)
+parser.add_argument('--score_col_idx', help='Index of the column containing score', required=False, type=int, default=6)
 args = parser.parse_args()
 
 course_id = args.course_id
@@ -16,6 +18,8 @@ assignment_id = args.assignment_id
 excel_path = args.excel_path
 dir_path = args.dir_path
 upload_attachment = True if dir_path else False
+id_col_idx = args.id_col_idx
+score_col_idx = args.score_col_idx
 
 # check if the path is valid
 import os
@@ -51,7 +55,7 @@ except CanvasException as e:
     exit(1)
 
 # get id2score and id2path
-id2score = get_id2score(excel_path)
+id2score = get_id2score(excel_path, id_col_idx, score_col_idx)
 id2path = get_id2path(dir_path) if upload_attachment else None
 # submit scores and attachments
 for submission in quiz.get_submissions():
